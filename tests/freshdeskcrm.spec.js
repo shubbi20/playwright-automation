@@ -6,36 +6,59 @@ await page.getByRole('link', { name: 'Login' }).click();
 await page.locator("#emailInput").fill("product.development@acefone.in");
 await page.locator("#passwordInput").fill("Propass@809a");
 await page.getByRole('button', { name: 'Login' }).click();
-//await page.pause();
+// await page.waitForTimeout(60000);
+// await page.pause();
+// return;
 await page.locator("#username").fill("product.development@acefone.in");
 await page.locator("#password").fill("Propass@809a");
 await page.getByTestId('login-button').click();
 
- // ✅ Click the Smartflo App icon (left sidebar)
-  await page.getByRole('img', { name: 'tata live ias' }).click();
+await page.locator('button[data-test-id="nav-cti-widget-toggle"]').click();
 
-  // ✅ Switch to iframe (use data-test-id OR iframe tag inside container)
-  const smartfloFrame = page.frameLocator('[data-test-id="cti-widget-container"] iframe');
+  // ✅ Step 1: Locate Outer iframe (CTI widget container)
+  const outerFrame = page.frameLocator('[data-test-id="cti-widget-container"] iframe');
 
-  // ✅ Perform login inside iframe
-  await smartfloFrame.getByPlaceholder("Login ID").fill("Yaten750");
-  await smartfloFrame.getByPlaceholder("Password").fill("Secure@113");
+  // ✅ Step 2: Locate Inner iframe (id="root") inside outer iframe
+  const innerFrame = outerFrame.frameLocator('#root');
 
-  await smartfloFrame.getByRole("button", { name: "LOGIN" }).click();
+  // ✅ Step 3: Interact with elements inside inner iframe
+  await innerFrame.locator('//input[@class="input-field-text"] [@type="text"]').fill("Yaten750");
+  await innerFrame.locator('//input[@class="input-field-text"] [@type="password"]').fill("Secure@114");
 
-  // Optional wait to see result
-  await page.waitForTimeout(3000);
+  await innerFrame.getByRole('button', { name: 'LOGIN' }).click();
 
-//  // Select the Smartflo App (icon)
-//   await page.getByRole('img', { name: 'tata live ias' }).click();
+  await innerFrame.getByText('Entities').click();
 
-//   // ✅ Switch to iframe using its ID from screenshot
-//   const frame = page.frameLocator('iframe#f11hgcyg');
+  // Type a number into the search field inside the iframe
+  await innerFrame.locator('input[placeholder="Search Contacts by number"]').fill('7505355983');
 
-//   // ✅ Perform actions inside iframe
-//   await frame.getByPlaceholder('Login ID').fill('Yaten750');
-//   await frame.getByPlaceholder('Password').fill('Secure@113');
-//   await frame.getByRole('button', { name: 'LOGIN' }).click();
+
+//await page.waitForLoadState('networkidle');
+ //  Wait for the search results to appear
+  //await innerFrame.locator('.contact-card-outer').first().waitFor({ state: 'visible' });
+ await innerFrame.locator('.contact-card-outer', { hasText: '7505355983' }).waitFor({ state: 'visible', timeout: 15000 }); 
+
+  //  Click the call icon for the first contact result
+ // await innerFrame.locator('.contact-call-outer svg.call-history-icons').click();
+await innerFrame.locator('.contact-card-outer', { hasText: '7505355983' }).locator('.contact-call-outer svg.call-history-icons').first().click();
+
+await innerFrame.locator('//div[@class="call-btns-div"]//child::button[@type="button"]').waitFor({ state: 'visible', timeout: 15000 }); 
+// Wait for 3 seconds (3000 milliseconds)
+//await page.waitForTimeout(90000);
+
+await innerFrame.locator('//div[@class="call-btns-div"]//child::button[@type="button"]').click();
+
+  //await innerFrame.locator('button.call-button.active-answer.btn.btn-primary').click();
+  await page.pause();
+
+  // // ✅ Click CTI widget icon to open iframe (your toggle button)
+  // await page.locator('button[data-test-id="nav-cti-widget-toggle"]').click();
+
+ 
+
+  
+ 
+
 
 
 
